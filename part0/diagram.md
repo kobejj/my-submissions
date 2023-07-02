@@ -8,6 +8,8 @@ The diagram does not have to be a sequence diagram. Any sensible way of presenti
 
 -->
 
+```mermaid
+
 sequenceDiagram
 participant browser
 participant server
@@ -35,9 +37,12 @@ participant server
     deactivate server
 
     Note right of the browser: The browser executes the callback function that renders the notes
+```
 
 <!-- 0.5: Single page app diagram
 Create a diagram depicting the situation where the user goes to the single-page app version of the notes app at https://studies.cs.helsinki.fi/exampleapp/spa. -->
+
+```mermaid
 
 sequenceDiagram
 participant browser
@@ -49,11 +54,16 @@ participant server
     deactivate server
 
     Note right of the browser: The SPA version of the app does not traditionally send the form data, but instead uses the JavaScript code it fetched from the server.
+```
 
 <!-- 0.6: New note in Single page app diagram
 Create a diagram depicting the situation where the user creates a new note using the single-page version of the app.
 
 This was the last exercise, and it's time to push your answers to GitHub and mark the exercises as done in the submission system. -->
+
+```mermaid
+
+```
 
 sequenceDiagram
 participant browser
