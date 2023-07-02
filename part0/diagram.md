@@ -63,8 +63,6 @@ This was the last exercise, and it's time to push your answers to GitHub and mar
 
 ```mermaid
 
-```
-
 sequenceDiagram
 participant browser
 participant server
@@ -75,3 +73,4 @@ participant server
     deactivate server
 
     Note right of the browser: The code determines that the data is to be sent with an HTTP POST request and the data type is to be JSON. The data type is determined with a Content-type header. Then the data is sent as JSON string.
+```
