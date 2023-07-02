@@ -1,12 +1,12 @@
 // 0.4: New note diagram
 
 sequenceDiagram
-    participant browser
-    participant server
+participant browser
+participant server
 
-    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/notes
+    browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/new_note
     activate server
-    server-->>browser: HTML document
+    server-->>browser: HTTP status code 302
     deactivate server
 
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/main.css
@@ -27,6 +27,3 @@ sequenceDiagram
     deactivate server
 
     Note right of the browser: The browser executes the callback function that renders the notes
-
-
-s
