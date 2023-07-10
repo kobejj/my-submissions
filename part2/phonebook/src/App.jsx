@@ -1,20 +1,25 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
+import Notification from "./components/Notification";
+import { getAll, create, update } from "./services/services";
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: "Arto Hellas", number: "040-123456", id: 1 },
-    { name: "Ada Lovelace", number: "39-44-5323523", id: 2 },
-    { name: "Dan Abramov", number: "12-43-234345", id: 3 },
-    { name: "Mary Poppendieck", number: "39-23-6423122", id: 4 },
-  ]);
-
+  const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
-
   const [inputName, setInputName] = useState("");
+  const [message, setMessage] = useState(null);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    getAll()
+      .then((res) => {
+        setPersons(res.data);
+      })
+      .catch((err) => console.log(err));
+  }, []);
 
   const namesToShow =
     inputName.length === 0
@@ -23,21 +28,56 @@ const App = () => {
           person.name.toLowerCase().includes(inputName.toLowerCase())
         );
 
-  console.log(namesToShow);
+  //console.log(namesToShow);
 
   const addName = (e) => {
     e.preventDefault();
 
+    if (newName === "") {
+      return alert("Please input a name.");
+    }
+
     const containValueName = persons.some((obj) =>
-      Object.values(obj).includes(newName)
+      Object.values(obj).includes(newName.trim())
     );
 
     if (containValueName) {
-      return alert(`${newName} is already added to phonebook`);
+      const nameToBeUpdated = persons.filter(
+        (person) => person.name === newName
+      )[0].name;
+      if (
+        window.confirm(
+          `${nameToBeUpdated} is already added to phonebook, replace the old number with a new one?`
+        )
+      ) {
+        // find id of newName and name same with newName
+        const idOfNameToBeUpdated = persons.filter(
+          (person) => person.name === newName
+        )[0].id;
+        //console.log(idOfNameToBeUpdated);
+
+        const nameOfPerson = persons.find((n) => n.id === idOfNameToBeUpdated);
+        //console.log(nameOfPerson);
+        // change phoneNum baed on id and using axios.put
+        const changedNum = { ...nameOfPerson, number: newNumber };
+
+        update(idOfNameToBeUpdated, changedNum)
+          .then((res) => {
+            setPersons(
+              persons.map((person) =>
+                person.id !== idOfNameToBeUpdated ? person : res.data
+              )
+            );
+            setNewName("");
+            setNewNumber("");
+          })
+          .catch((err) => console.log(err));
+      }
+      return;
     }
 
     const containValueNum = persons.some((obj) =>
-      Object.values(obj).includes(newNumber)
+      Object.values(obj).includes(newNumber.trim())
     );
 
     if (containValueNum) {
@@ -45,13 +85,24 @@ const App = () => {
     }
 
     const personObject = {
-      name: newName,
-      number: newNumber,
+      name: newName.trim(),
+      number: newNumber.trim(),
       id: persons.length + 1,
     };
-    setPersons(persons.concat(personObject));
-    setNewName("");
-    setNewNumber("");
+
+    create(personObject)
+      .then((res) => {
+        setPersons(persons.concat(res.data));
+
+        setNewName("");
+        setNewNumber("");
+
+        setMessage(`Added ${newName.trim()}`);
+        setTimeout(() => {
+          setMessage(null);
+        }, 5000);
+      })
+      .catch((err) => console.log(err));
   };
 
   const handleInputName = (e) => {
@@ -72,6 +123,8 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
 
+      <Notification message={message} error={error} />
+
       <Filter value={inputName} onChange={handleInputName} />
 
       <h3>Add a new</h3>
@@ -86,9 +139,17 @@ const App = () => {
 
       <h2>Numbers</h2>
 
-      <Persons namesToShow={namesToShow} />
+      <Persons
+        namesToShow={namesToShow}
+        persons={persons}
+        setPersons={setPersons}
+        setMessage={setMessage}
+        setError={setError}
+      />
     </div>
   );
 };
 
 export default App;
+
+//npx json-server --port 3001 --watch db.json
