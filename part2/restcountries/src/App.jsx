@@ -1,3 +1,4 @@
+// Importing necessary dependencies and components
 import { useState, useEffect } from "react";
 import { getAll, getWeatherInfo } from "./services/services";
 import Notification from "./components/Notification";
@@ -5,14 +6,15 @@ import CountriesList from "./components/CountriesList";
 import CountryDetails from "./components/CountryDetails";
 
 function App() {
+  // Defining states for the application
   const [countries, setCountries] = useState([]);
   const [inputCountry, setInputCountry] = useState("");
   const [viewDetails, setViewDetails] = useState(false);
   const [listDetails, setListDetails] = useState("");
   const [capital, setCapital] = useState("London");
   const [weather, setWeather] = useState(null);
-  console.log(weather);
 
+  // Fetching countries on initial render
   useEffect(() => {
     getAll()
       .then((res) => {
@@ -21,6 +23,7 @@ function App() {
       .catch((err) => console.log(err));
   }, []);
 
+  // Fetching weather info whenever the capital changes
   useEffect(() => {
     getWeatherInfo(capital)
       .then((res) => {
@@ -29,6 +32,7 @@ function App() {
       .catch((err) => console.log(err));
   }, [capital]);
 
+  // Filtering countries based on inputCountry
   const countriesToShow =
     inputCountry.length === 0
       ? countries
@@ -36,13 +40,12 @@ function App() {
           country.name.common.toLowerCase().includes(inputCountry.toLowerCase())
         );
 
-  //console.log(inputCountry);
-  // console.log(countriesToShow);
-
+  // Handling changes in the input field
   const handleChange = (e) => {
     setInputCountry(e.target.value);
   };
 
+  // Function to determine what to display based on number of countries to show
   const display = () => {
     if (countriesToShow.length > 10 && inputCountry.length > 0) {
       return (
@@ -74,6 +77,7 @@ function App() {
     }
   };
 
+  // Return the rendered components
   return (
     <div>
       <div>
